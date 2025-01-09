@@ -69,10 +69,7 @@ class UserAllSerializer(serializers.ModelSerializer):
 #         fields = ['id','author','text','created_date']
 
 
-class CategorySerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Category
-        fields = ['category_name']
+
 
 # class RatingSerializer(serializers.ModelSerializer):
     # user = UserProfileSerializer()
@@ -88,11 +85,24 @@ class ProductPhotosSerializer(serializers.ModelSerializer):
 
 class ProductListSerializer(serializers.ModelSerializer):
     date = serializers.DateTimeField(format='%Y-%m-%d')
+
 #    average_rating = serializers.SerializerMethodField()
     class Meta:
         model = Product
-        fields = ['id','product_name','price','date','average_rating']
+        fields = ['id','product_name','date']
     #
+
+class CategorySerializer(serializers.ModelSerializer):
+    product = ProductListSerializer(read_only=True,many=True)
+    class Meta:
+        model = Category
+        fields = ['category_name','product']
+
+
+class CategorySimpleSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = Category
+        fields = ['category_name']
     # def get_average_rating(self, obj):
     #     return obj.get_average_rating()
 class Consultation_KeysSerializer(serializers.ModelSerializer):
@@ -101,7 +111,7 @@ class Consultation_KeysSerializer(serializers.ModelSerializer):
         fields = ['consultation','keys']
 
 class ProductDetailSerializer(serializers.ModelSerializer):
-    category = CategorySerializer()
+    category = CategorySimpleSerializer()
     # ratings = RatingSerializer(read_only=True,many=True)
     # reviews = ReviewSerializer(read_only=True,many=True)
     product = ProductPhotosSerializer(read_only=True,many=True)
@@ -112,7 +122,7 @@ class ProductDetailSerializer(serializers.ModelSerializer):
         model = Product
 
         fields = ['product_name','category','description','price','product_video',
-                  'ratings','reviews','active','date', 'product']
+                  'active','date', 'product']
 
         # def get_average_rating(self, obj):
         #     return obj.get_average_rating()
